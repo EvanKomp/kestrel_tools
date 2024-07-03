@@ -18,4 +18,4 @@ def get_emissions_command_from_job(working_directory, job):
         The job to get the emissions command for
     """
     # emissiosn are in the fifth column of the second row of emmissions.csv
-    return "awk -F, 'NR == 2 {print $5}' " +f"{working_directory}/{job.job_id}/emissions.csv"
+    return f"awk -F, 'NR > 1 {{sum += $5}} END {{print sum}}' {working_directory}/{job.job_id}/emissions.csv"

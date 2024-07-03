@@ -13,6 +13,9 @@ from scp import SCPClient
 
 from tools.carbon import get_emissions_command_from_job
 
+import logging
+logger = logging.getLogger(__name__)
+
 class HPCInteraction:
     def __init__(self, hostname, username, ssh_key_path, remote_working_directory, local_working_directory):
         self.hostname = hostname
@@ -45,28 +48,39 @@ class HPCInteraction:
         # create the remote working directory if it does not exist
         command = f"mkdir -p {self.remote_working_directory}/{job.job_id}"
         self.execute_command(command)
+        logger.info(f"Created remote working directory {self.remote_working_directory}/{job.job_id}")
         
         # Transfer all input files
         with SCPClient(self.client.get_transport(), socket_timeout=5000) as scp:
             for file_transfer in slurm_submission.get_file_transfers():
                 if file_transfer.is_input:
                     scp.put(file_transfer.local_path, file_transfer.remote_path)
+                    logger.info(f"Transferred {file_transfer.local_path} to {file_transfer.remote_path}")
         
         # Generate and transfer the job script
+        # these are a list of scripts
         script_content = slurm_submission.generate_script()
-        script_filename = os.path.join(self.local_working_directory, 'submissions', f"job_script_{job.job_id}.sh")
-        with open(script_filename, 'w') as f:
-            f.write(script_content)
-        remote_script_path = f"{self.remote_working_directory}/{job.job_id}/job_script_{job.job_id}.sh"
-        with SCPClient(self.client.get_transport()) as scp:
-            scp.put(script_filename, remote_script_path)
-        
-        # Submit the job
-        submit_command = f"sbatch {remote_script_path}"
-        stdout, stderr = self.execute_command(submit_command)
-        
-        # Parse job ID from Slurm output
-        hpc_job_id = stdout.strip().split()[-1]
+        hpc_job_id = None
+        for i, s in enumerate(script_content):
+            script_filename = os.path.join(self.local_working_directory, 'submissions', f"job_script_{job.job_id}_{i}.sh")
+            with open(script_filename, 'w') as f:
+                f.write(s)
+            remote_script_path = f"{self.remote_working_directory}/{job.job_id}/job_script_{job.job_id}_{i}.sh"
+            with SCPClient(self.client.get_transport()) as scp:
+                scp.put(script_filename, remote_script_path)
+            logger.info(f"Transferred {script_filename} to {remote_script_path}")
+            
+            # Submit the job
+            if hpc_job_id is None:
+                submit_command = f"sbatch {remote_script_path}"
+            else:
+                submit_command = f"sbatch --dependency=afterok:{hpc_job_id} {remote_script_path}"
+            logger.info(f"Submitting job {job.job_id} with command: {submit_command}")
+            stdout, stderr = self.execute_command(submit_command)
+            
+            # Parse job ID from Slurm output
+            hpc_job_id = stdout.strip().split()[-1]
+            logger.info(f"Submitted job {job.job_id} with HPC job ID {hpc_job_id}")
         
         # Clean up local script file
         os.remove(script_filename)
@@ -105,6 +119,7 @@ class HPCInteraction:
                 'F': 'failed'
             }
             status = map.get(status, 'unknown')
+        logger.info(f"Job {hpc_job_id} status: {status}")
         
         return status
 
@@ -119,9 +134,10 @@ class HPCInteraction:
                         scp.get(file_transfer.remote_path, file_transfer.local_path)
             
             # Get the main output file
-            remote_output = f"{self.remote_working_directory}/{job.output_filename}"
+            remote_output = f"{self.remote_working_directory}/{job.job_id}/{job.output_filename}"
             local_output = f"{self.local_working_directory}/results/{job.output_filename}"
             scp.get(remote_output, local_output)
+            logger.info(f"Retrieved {remote_output} to {local_output}")
     
     def get_carbon_footprint(self, job):
         command = get_emissions_command_from_job(self.remote_working_directory, job)

@@ -74,9 +74,15 @@ cleanup() {
 # # Set the trap
 trap cleanup EXIT
 #################### END CARBON TRACKING
+source ~/.bash_profile
 """
-
-        return header + preamble + script
+        if type(script) == str:
+            return [header + preamble + script]
+        elif type(script) == list:
+            scripts = []
+            for i, s in enumerate(script):
+                scripts.append(header[i] + preamble + s)
+            return scripts
 
     def get_output_filename(self):
         return self.job.output_filename
