@@ -1,0 +1,26 @@
+<!-- templates/home.html
+* Author: Evan Komp
+* Created: 7/1/2024
+* Company: National Renewable Energy Lab, Bioeneergy Science and Technology
+* License: MIT
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protein Prediction Server</title>
+</head>
+<body>
+    <h1>Welcome to the Protein Prediction Server</h1>
+    <h2>Available Protocols:</h2>
+    <ul>
+    {% for protocol in protocols %}
+        <li>
+            <a href="{{ protocol.url }}">{{ protocol.name }}</a>: {{ protocol.description }}
+        </li>
+    {% endfor %}
+    </ul>
+    <p><a href="{{ url_for('job_status') }}">Check Job Status</a></p>
+</body>
+</html>

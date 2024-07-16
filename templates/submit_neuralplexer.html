@@ -1,0 +1,39 @@
+<!-- templates/submit_neuralplexer.html
+* Author: Evan Komp
+* Created: 7/2/2024
+* Company: National Renewable Energy Lab, Bioeneergy Science and Technology
+* License: MIT
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Neuralplexer Job</title>
+</head>
+<body>
+    <h1>Submit Neuralplexer Job</h1>
+    <h2>Instructions:</h2>
+    <p>Submit a job to the Neuralplexer server. The job requires a CSV file with the following columns:</p>
+    <ul>
+        <li> <strong>protein_seq</strong> (required): Amino acid sequence of the protein to be analyzed. </li>
+        <li> <strong>smiles</strong> (required): SMILES representation of the ligand to be docked. </li>
+        <li> <strong>pdb</strong> (optional): PDB file with the protein structure. </li>
+    </ul>
+    <p>Optionally, you can provide a ZIP file with PDB files for the proteins in the CSV file.</p>
+
+    <form method="POST" enctype="multipart/form-data">
+        <label for="csv_file">CSV File (required):</label>
+        <input type="file" id="csv_file" name="csv_file" accept=".csv" required>
+        <br><br>
+        <label for="zip_file">ZIP File with PDB files (optional):</label>
+        <input type="file" id="zip_file" name="zip_file" accept=".zip">
+        <br><br>
+        <label for="userid">User ID:</label>
+        <input type="text" id="userid" name="userid" required>
+        <br><br>
+        <input type="submit" value="Submit Job">
+    </form>
+    <p><a href="{{ url_for('home') }}">Back to Home</a></p>
+</body>
+</html>

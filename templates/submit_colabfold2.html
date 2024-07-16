@@ -1,0 +1,27 @@
+<!-- templates/submit_colabfold2.html
+* Author: Evan Komp
+* Created: 7/2/2024
+* Company: National Renewable Energy Lab, Bioeneergy Science and Technology
+* License: MIT
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit ColabFold2 Job</title>
+</head>
+<body>
+    <h1>Submit ColabFold2 Job</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <label for="fasta_file">FASTA File:</label>
+        <input type="file" id="fasta_file" name="fasta_file" accept=".fasta,.fa" required>
+        <br><br>
+        <label for="userid">User ID:</label>
+        <input type="text" id="userid" name="userid" required>
+        <br><br>
+        <input type="submit" value="Submit Job">
+    </form>
+    <p><a href="{{ url_for('home') }}">Back to Home</a></p>
+</body>
+</html>

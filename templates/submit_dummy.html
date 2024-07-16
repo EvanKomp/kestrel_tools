@@ -1,0 +1,24 @@
+<!-- templates/submit_dummy.html
+* Author: Evan Komp
+* Created: 7/1/2024
+* Company: National Renewable Energy Lab, Bioeneergy Science and Technology
+* License: MIT
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Dummy Job</title>
+</head>
+<body>
+    <h1>Submit Dummy Job</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <label for="input_file">Input File:</label>
+        <input type="file" id="input_file" name="input_file" required>
+        <br><br>
+        <input type="submit" value="Submit Job">
+    </form>
+    <p><a href="{{ url_for('home') }}">Back to Home</a></p>
+</body>
+</html>
