@@ -264,6 +264,7 @@ def retrieve_results(job_id):
         else:
             raise ValueError('Please check job status to refresh results.')
         send_file(result_path, as_attachment=True)
+        return redirect(url_for('job_status', job_id=job_id))
     else:
         flash('Job not found', 'error')
         return redirect(url_for('job_status', job_id=job_id))
