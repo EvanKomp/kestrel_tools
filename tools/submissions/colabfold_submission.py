@@ -29,7 +29,6 @@ class ColabFold2Submission(SlurmSubmission):
         
         inference_header = f"""#!/bin/bash
 #SBATCH --partition={self.gpu_partition}
-#SBATCH --reservation=h100-testing
 #SBATCH --account={self.account}
 #SBATCH --time=0-12:30:00
 #SBATCH --nodes=1

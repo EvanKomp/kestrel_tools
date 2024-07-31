@@ -19,7 +19,6 @@ class NeuralplexerSubmission(SlurmSubmission):
     def _generate_header(self):
         script = f"""#!/bin/bash
 #SBATCH --partition={self.gpu_partition}
-#SBATCH --reservation=h100-testing
 #SBATCH --account={self.account}
 #SBATCH --time={self.time_limit}
 #SBATCH --nodes={self.nodes}
